@@ -13,10 +13,14 @@
       height: 50px;
     }
   }
+
   .cellWhite{
     background-color: bisque;
   }
   .cellBlack{
     background-color: #456775;
+  }
+  .activeCell{
+    background-color: red;
   }
 }

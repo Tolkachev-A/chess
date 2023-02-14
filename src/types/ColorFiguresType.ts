@@ -1,3 +1,3 @@
-import { BlackFigures } from "enums";
+import { SrcBlackFigures } from "enums";
 
-export type ColorFiguresType = typeof BlackFigures;
+export type ColorFiguresType = typeof SrcBlackFigures;

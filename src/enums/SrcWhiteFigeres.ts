@@ -5,7 +5,7 @@ import pawn from "../assets/white-pawn.png";
 import queen from "../assets/white-queen.png";
 import rook from "../assets/white-rook.png";
 
-export const WhiteFigures = {
+export const SrcWhiteFigures = {
   bishop,
   king,
   knight,
