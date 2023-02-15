@@ -1,39 +1,48 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React, { useMemo } from "react";
 
-import { DataActiveFigureType } from "components/Board/Board";
-import { FiguresType, Nullable } from "types";
+import { DataActiveFigureType, DataFigureType, Nullable } from "types";
 
 type CellBoardType = {
+  id: number;
   className: string;
   x: number;
   y: number;
-  dataFigure: { src: Nullable<string>; figure: Nullable<FiguresType> };
-  onClickFigure: Dispatch<SetStateAction<DataActiveFigureType>>;
+  isMoveSlotAvailable: boolean;
+  dataFigure: Nullable<DataFigureType>;
+  onFigureClick: (data: DataActiveFigureType) => void;
+  onSlotAvailableClick: (x: number, y: number) => void;
   activeCell?: string;
 };
 
 export const Cell = ({
+  id,
   className,
   x,
   y,
+  isMoveSlotAvailable,
   dataFigure,
-  onClickFigure,
+  onFigureClick,
+  onSlotAvailableClick,
   activeCell,
 }: CellBoardType) => {
-  const handleClickFigure = () => {
-    if (dataFigure.src) {
-      onClickFigure({ figure: dataFigure.figure, x, y });
+  const onCellClick = () => {
+    if (dataFigure) {
+      onFigureClick({ figure: dataFigure.figure, x, y, src: dataFigure.src });
+    } else if (isMoveSlotAvailable) {
+      onSlotAvailableClick(x, y);
     }
   };
 
+  const availableSlot = useMemo(() => {
+    return dataFigure?.src
+      ? null
+      : isMoveSlotAvailable && <div className="slot-available" />;
+  }, [dataFigure?.src, isMoveSlotAvailable]);
+
   return (
-    <div
-      className={`cell ${className} ${activeCell}`}
-      onClick={handleClickFigure}
-    >
-      {dataFigure.src && (
-        <img className="img" src={dataFigure.src} alt="figure" />
-      )}
+    <div className={`cell ${className} ${activeCell}`} onClick={onCellClick}>
+      {availableSlot}
+      {dataFigure && <img className="img" src={dataFigure.src} alt="figure" />}
     </div>
   );
 };

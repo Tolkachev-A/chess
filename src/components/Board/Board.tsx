@@ -1,32 +1,44 @@
-import React, { useMemo, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect } from "react";
 
 import "./board.scss";
 
 import { Cell } from "components/Cell";
 import { SrcBlackFigures, SrcWhiteFigures } from "enums";
-import { FiguresType, Nullable } from "types";
+import { DataActiveFigureType, Nullable } from "types";
 import { getFigure } from "utils";
 
-export type DataActiveFigureType = {
-  figure: Nullable<FiguresType>;
-  x: Nullable<number>;
-  y: Nullable<number>;
+type BoardType = {
+  // eslint-disable-next-line no-undef
+  board: JSX.Element[];
+  // eslint-disable-next-line no-undef
+  setBoard: Dispatch<SetStateAction<JSX.Element[]>>;
+  dataActiveFigure: Nullable<DataActiveFigureType>;
+  isSlotAvailable: (
+    data: Nullable<DataActiveFigureType>,
+    x: number,
+    y: number
+  ) => boolean;
+  handleFigureClick: (data: DataActiveFigureType) => void;
+  handleSlotAvailableClick: (x: number, y: number) => void;
 };
 
-export const Board = () => {
-  const [dataActiveFigure, setDataActiveFigure] =
-    useState<DataActiveFigureType>({
-      figure: null,
-      x: null,
-      y: null,
-    });
+export const Board = ({
+  board,
+  setBoard,
+  dataActiveFigure,
+  isSlotAvailable,
+  handleFigureClick,
+  handleSlotAvailableClick,
+}: BoardType) => {
+  useEffect(() => {
+    getBoard();
+  }, []);
 
-  console.log(dataActiveFigure);
-  const cell = useMemo(() => {
-    const cells = [];
+  const getBoard = () => {
+    const arr = [];
 
     const isCorrespondsCoordinates = (x: number, y: number) => {
-      if (x === dataActiveFigure.x && y === dataActiveFigure.y) {
+      if (x === dataActiveFigure?.x && y === dataActiveFigure?.y) {
         return true;
       }
     };
@@ -40,23 +52,28 @@ export const Board = () => {
       for (let j = 0; j < 8; j++) {
         const srcFigures =
           i === 0 || i === 1 ? SrcWhiteFigures : SrcBlackFigures;
+        const id = Math.random();
 
-        cells.push(
+        arr.push(
           <Cell
-            key={Math.random()}
+            key={id}
+            id={id}
             className={j % 2 === 0 ? firstClassName : secondClassName}
             x={i}
             y={j}
+            isMoveSlotAvailable={isSlotAvailable(dataActiveFigure, i, j)}
             dataFigure={getFigure(i, j, srcFigures)}
-            onClickFigure={setDataActiveFigure}
+            onFigureClick={handleFigureClick}
+            onSlotAvailableClick={handleSlotAvailableClick}
             activeCell={isCorrespondsCoordinates(i, j) && "activeCell"}
           />
         );
       }
     }
 
-    return cells;
-  }, [dataActiveFigure.x, dataActiveFigure.y]);
+    setBoard(arr);
+  };
 
-  return <div className="board-container">{cell}</div>;
+  // @ts-ignore
+  return <div className="board-container">{board}</div>;
 };
